@@ -9,7 +9,7 @@ type (
 )
 
 var Default = &Gitlab{
-	URL:     "https://api.github.com/",
+	URL:     "https://gitlab.com/",
 	Token:   "",
 	Timeout: 5000,
 }

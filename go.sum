@@ -95,6 +95,8 @@ github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJS
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
+github.com/joncalhoun/qson v0.0.0-20200422171543-84433dcd3da0 h1:ct2XA1aDw8A07Dr8gtrrZgIgLKcZNAl2o9nn0WRMK4Y=
+github.com/joncalhoun/qson v0.0.0-20200422171543-84433dcd3da0/go.mod h1:DFXrEwSRX0p/aSvxE21319menCBFeQO0jXpRj7LEZUA=
 github.com/jsdidierlaurent/azure-devops-go-api/azuredevops v0.0.0-20191016103718-deea5b1446b8 h1:3qgHyXNI1ppHyCmKcXhrGmsknGnCaBaDp5yoo6K1SEI=
 github.com/jsdidierlaurent/azure-devops-go-api/azuredevops v0.0.0-20191016103718-deea5b1446b8/go.mod h1:SPsWmluDVSxjBq7jVlaCG4nAWY1muXadVpH4xJbbOj0=
 github.com/jsdidierlaurent/echo-middleware v1.0.3 h1:fo7sXZZQezcYGRBrMnoncIg59fkBuVCpjHA26sG7L5E=

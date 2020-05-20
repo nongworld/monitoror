@@ -7,7 +7,6 @@ require (
 	github.com/GeertJohan/go.rice v1.0.0
 	github.com/basgys/goxml2json v1.1.0
 	github.com/bitly/go-simplejson v0.5.0 // indirect
-	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869
 	github.com/bradfitz/gomemcache v0.0.0-20190329173943-551aad21a668 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/structs v1.1.0
@@ -17,6 +16,7 @@ require (
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/joho/godotenv v1.3.0
+	github.com/joncalhoun/qson v0.0.0-20200422171543-84433dcd3da0
 	github.com/jsdidierlaurent/azure-devops-go-api/azuredevops v0.0.0-20191016103718-deea5b1446b8
 	github.com/jsdidierlaurent/echo-middleware v1.0.3
 	github.com/jsdidierlaurent/go-pingdom v1.0.1-0.20191016073917-beef4d2f78cd

@@ -9,9 +9,7 @@ type MergeRequest struct {
 	Title  string
 	Author coreModels.Author
 
-	PipelineID *int
-
-	ProjectID int
-	Branch    string
-	CommitSHA string
+	SourceProjectID int
+	SourceBranch    string
+	CommitSHA       string
 }

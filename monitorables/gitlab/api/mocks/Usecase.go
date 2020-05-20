@@ -16,12 +16,12 @@ type Usecase struct {
 	mock.Mock
 }
 
-// MergeRequest provides a mock function with given fields: params
-func (_m *Usecase) MergeRequest(params *models.MergeRequest) (*monitorormodels.Tile, error) {
+// Issues provides a mock function with given fields: params
+func (_m *Usecase) Issues(params *models.IssuesParams) (*monitorormodels.Tile, error) {
 	ret := _m.Called(params)
 
 	var r0 *monitorormodels.Tile
-	if rf, ok := ret.Get(0).(func(*models.MergeRequest) *monitorormodels.Tile); ok {
+	if rf, ok := ret.Get(0).(func(*models.IssuesParams) *monitorormodels.Tile); ok {
 		r0 = rf(params)
 	} else {
 		if ret.Get(0) != nil {
@@ -30,7 +30,30 @@ func (_m *Usecase) MergeRequest(params *models.MergeRequest) (*monitorormodels.T
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.MergeRequest) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.IssuesParams) error); ok {
+		r1 = rf(params)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MergeRequest provides a mock function with given fields: params
+func (_m *Usecase) MergeRequest(params *models.MergeRequestParams) (*monitorormodels.Tile, error) {
+	ret := _m.Called(params)
+
+	var r0 *monitorormodels.Tile
+	if rf, ok := ret.Get(0).(func(*models.MergeRequestParams) *monitorormodels.Tile); ok {
+		r0 = rf(params)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*monitorormodels.Tile)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*models.MergeRequestParams) error); ok {
 		r1 = rf(params)
 	} else {
 		r1 = ret.Error(1)
@@ -63,11 +86,11 @@ func (_m *Usecase) MergeRequestsGenerator(params interface{}) ([]configmodels.Ge
 }
 
 // Pipeline provides a mock function with given fields: params
-func (_m *Usecase) Pipeline(params *models.Pipeline) (*monitorormodels.Tile, error) {
+func (_m *Usecase) Pipeline(params *models.PipelineParams) (*monitorormodels.Tile, error) {
 	ret := _m.Called(params)
 
 	var r0 *monitorormodels.Tile
-	if rf, ok := ret.Get(0).(func(*models.Pipeline) *monitorormodels.Tile); ok {
+	if rf, ok := ret.Get(0).(func(*models.PipelineParams) *monitorormodels.Tile); ok {
 		r0 = rf(params)
 	} else {
 		if ret.Get(0) != nil {
@@ -76,7 +99,7 @@ func (_m *Usecase) Pipeline(params *models.Pipeline) (*monitorormodels.Tile, err
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*models.Pipeline) error); ok {
+	if rf, ok := ret.Get(1).(func(*models.PipelineParams) error); ok {
 		r1 = rf(params)
 	} else {
 		r1 = ret.Error(1)

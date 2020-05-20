@@ -3,15 +3,15 @@ package repository
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
-
-	"github.com/AlekSi/pointer"
 
 	"github.com/monitoror/monitoror/monitorables/gitlab/api"
 	"github.com/monitoror/monitoror/monitorables/gitlab/api/models"
 	"github.com/monitoror/monitoror/monitorables/gitlab/config"
 	"github.com/monitoror/monitoror/pkg/gogitlab"
 
+	"github.com/AlekSi/pointer"
 	"github.com/xanzy/go-gitlab"
 )
 
@@ -19,9 +19,10 @@ type (
 	gitlabRepository struct {
 		config *config.Gitlab
 
-		pipelinesService     gogitlab.Pipelines
-		mergeRequestsService gogitlab.MergeRequests
-		projectService       gogitlab.Project
+		issuesService        gogitlab.IssuesService
+		pipelinesService     gogitlab.PipelinesService
+		mergeRequestsService gogitlab.MergeRequestsService
+		projectService       gogitlab.ProjectService
 	}
 )
 
@@ -40,10 +41,64 @@ func NewGitlabRepository(config *config.Gitlab) api.Repository {
 	return &gitlabRepository{
 		config: config,
 
+		issuesService:        git.Issues,
 		pipelinesService:     git.Pipelines,
 		mergeRequestsService: git.MergeRequests,
 		projectService:       git.Projects,
 	}
+}
+
+func (gr *gitlabRepository) GetIssues(projectID *int, query string) (int, error) {
+	values, err := url.ParseQuery(query)
+	if err != nil {
+		return 0, err
+	}
+
+	var resp *gitlab.Response
+	if projectID != nil {
+		listProjectIssueOption := &gitlab.ListProjectIssuesOptions{}
+		listProjectIssueOption.State = valueToString(values, "state")
+		listProjectIssueOption.Labels = valueToLabels(values, "labels")
+		listProjectIssueOption.Milestone = valueToString(values, "milestone")
+		listProjectIssueOption.Scope = valueToString(values, "scope")
+		listProjectIssueOption.MyReactionEmoji = valueToString(values, "my_reaction_emoji")
+		listProjectIssueOption.Search = valueToString(values, "search")
+		listProjectIssueOption.AuthorID, err = valueToInt(values, "author_id")
+		if err != nil {
+			return 0, err
+		}
+		listProjectIssueOption.AssigneeID, err = valueToInt(values, "assignee_id")
+		if err != nil {
+			return 0, err
+		}
+
+		_, resp, err = gr.issuesService.ListProjectIssues(*projectID, listProjectIssueOption)
+		if err != nil {
+			return 0, err
+		}
+	} else {
+		listIssueOption := &gitlab.ListIssuesOptions{}
+		listIssueOption.State = valueToString(values, "state")
+		listIssueOption.Labels = valueToLabels(values, "labels")
+		listIssueOption.Milestone = valueToString(values, "milestone")
+		listIssueOption.Scope = valueToString(values, "scope")
+		listIssueOption.MyReactionEmoji = valueToString(values, "my_reaction_emoji")
+		listIssueOption.Search = valueToString(values, "search")
+		listIssueOption.AuthorID, err = valueToInt(values, "author_id")
+		if err != nil {
+			return 0, err
+		}
+		listIssueOption.AssigneeID, err = valueToInt(values, "assignee_id")
+		if err != nil {
+			return 0, err
+		}
+
+		_, resp, err = gr.issuesService.ListIssues(listIssueOption)
+		if err != nil {
+			return 0, err
+		}
+	}
+	return resp.TotalItems, nil
 }
 
 func (gr *gitlabRepository) GetPipeline(projectID, pipelineID int) (*models.Pipeline, error) {
@@ -98,15 +153,11 @@ func (gr *gitlabRepository) GetMergeRequest(projectID, mergeRequestID int) (*mod
 	}
 
 	mergeRequest := &models.MergeRequest{
-		ID:        gitlabMergeRequest.IID,
-		Title:     gitlabMergeRequest.Title,
-		ProjectID: gitlabMergeRequest.SourceProjectID,
-		Branch:    gitlabMergeRequest.SourceBranch,
-		CommitSHA: gitlabMergeRequest.SHA,
-	}
-
-	if gitlabMergeRequest.Pipeline != nil {
-		mergeRequest.PipelineID = &gitlabMergeRequest.Pipeline.ID
+		ID:              gitlabMergeRequest.IID,
+		Title:           gitlabMergeRequest.Title,
+		SourceProjectID: gitlabMergeRequest.SourceProjectID,
+		SourceBranch:    gitlabMergeRequest.SourceBranch,
+		CommitSHA:       gitlabMergeRequest.SHA,
 	}
 
 	if gitlabMergeRequest.Author != nil {
@@ -121,21 +172,43 @@ func (gr *gitlabRepository) GetMergeRequest(projectID, mergeRequestID int) (*mod
 	return mergeRequest, nil
 }
 
-func (gr *gitlabRepository) GetMergeRequests(projectID int) ([]int, error) {
-	var ids []int
+func (gr *gitlabRepository) GetMergeRequests(projectID int) ([]models.MergeRequest, error) {
+	var mergeRequests []models.MergeRequest
 
 	gitlabMergeRequests, _, err := gr.mergeRequestsService.ListProjectMergeRequests(projectID, &gitlab.ListProjectMergeRequestsOptions{
+		// If needed by users, use pagination.
+		ListOptions: gitlab.ListOptions{
+			Page:    1,
+			PerPage: 100, // Maximum par_page allowed.
+		},
 		State: pointer.ToString("opened"),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	for _, mergeRequest := range gitlabMergeRequests {
-		ids = append(ids, mergeRequest.IID)
+	for _, gitlabMergeRequest := range gitlabMergeRequests {
+		mergeRequest := models.MergeRequest{
+			ID:              gitlabMergeRequest.IID,
+			Title:           gitlabMergeRequest.Title,
+			SourceProjectID: gitlabMergeRequest.SourceProjectID,
+			SourceBranch:    gitlabMergeRequest.SourceBranch,
+			CommitSHA:       gitlabMergeRequest.SHA,
+		}
+
+		if gitlabMergeRequest.Author != nil {
+			mergeRequest.Author.Name = gitlabMergeRequest.Author.Name
+			mergeRequest.Author.AvatarURL = gitlabMergeRequest.Author.AvatarURL
+
+			if mergeRequest.Author.Name == "" {
+				mergeRequest.Author.Name = gitlabMergeRequest.Author.Username
+			}
+		}
+
+		mergeRequests = append(mergeRequests, mergeRequest)
 	}
 
-	return ids, nil
+	return mergeRequests, nil
 }
 
 func (gr *gitlabRepository) GetProject(projectID int) (*models.Project, error) {

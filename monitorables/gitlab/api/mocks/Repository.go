@@ -12,6 +12,27 @@ type Repository struct {
 	mock.Mock
 }
 
+// GetIssues provides a mock function with given fields: projectID, query
+func (_m *Repository) GetIssues(projectID *int, query string) (int, error) {
+	ret := _m.Called(projectID, query)
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func(*int, string) int); ok {
+		r0 = rf(projectID, query)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*int, string) error); ok {
+		r1 = rf(projectID, query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetMergeRequest provides a mock function with given fields: projectID, mergeRequestID
 func (_m *Repository) GetMergeRequest(projectID int, mergeRequestID int) (*models.MergeRequest, error) {
 	ret := _m.Called(projectID, mergeRequestID)
@@ -36,15 +57,15 @@ func (_m *Repository) GetMergeRequest(projectID int, mergeRequestID int) (*model
 }
 
 // GetMergeRequests provides a mock function with given fields: projectID
-func (_m *Repository) GetMergeRequests(projectID int) ([]int, error) {
+func (_m *Repository) GetMergeRequests(projectID int) ([]models.MergeRequest, error) {
 	ret := _m.Called(projectID)
 
-	var r0 []int
-	if rf, ok := ret.Get(0).(func(int) []int); ok {
+	var r0 []models.MergeRequest
+	if rf, ok := ret.Get(0).(func(int) []models.MergeRequest); ok {
 		r0 = rf(projectID)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]int)
+			r0 = ret.Get(0).([]models.MergeRequest)
 		}
 	}
 

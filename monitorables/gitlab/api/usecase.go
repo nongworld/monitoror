@@ -9,12 +9,14 @@ import (
 )
 
 const (
-	GitlabPipelineTileType     coreModels.TileType = "GITHUB-PIPELINE"
-	GitlabMergeRequestTileType coreModels.TileType = "GITHUB-MERGEREQUEST"
+	GitlabIssuesTileType       coreModels.TileType = "GITLAB-ISSUES"
+	GitlabPipelineTileType     coreModels.TileType = "GITLAB-PIPELINE"
+	GitlabMergeRequestTileType coreModels.TileType = "GITLAB-MERGEREQUEST"
 )
 
 type (
 	Usecase interface {
+		Issues(params *models.IssuesParams) (*coreModels.Tile, error)
 		Pipeline(params *models.PipelineParams) (*coreModels.Tile, error)
 		MergeRequest(params *models.MergeRequestParams) (*coreModels.Tile, error)
 
